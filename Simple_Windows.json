@@ -147,4 +147,14 @@
       }
     }
   }
+  "Outputs" : {
+    "ImageId" : {
+      "Value" :  { "Fn::FindInMap" : [ "AWSRegion2AMI", { "Ref" : "AWSRegion" }, {"Ref" : "WindowsVersion"} ]},
+      "Description" : "Resulting AMI used"
+    },
+    "EIP" : {
+      "Value" : {"Ref" : "OutputEIP"},
+      "Description" : "Final Elastic IP for machine"
+    }
+  }
 }
