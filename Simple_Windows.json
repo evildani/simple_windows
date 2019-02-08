@@ -10,7 +10,7 @@
     "InstanceType" : {
       "Description" : "Amazon EC2 instance type",
       "Type" : "String",
-      "Default" : "m1.medium",
+      "Default" : "t2.medium",
       "AllowedValues" : [ "t1.micro", "t2.micro", "t2.small", "t2.medium", "m1.small", "m1.medium", "m1.large", "m1.xlarge", "m2.xlarge", "m2.2xlarge", "m2.4xlarge", "m3.medium", "m3.large", "m3.xlarge", "m3.2xlarge", "m4.large", "m4.xlarge", "m4.2xlarge", "m4.4xlarge", "m4.10xlarge", "c1.medium", "c1.xlarge", "c3.large", "c3.xlarge", "c3.2xlarge", "c3.4xlarge", "c3.8xlarge", "c4.large", "c4.xlarge", "c4.2xlarge", "c4.4xlarge", "c4.8xlarge", "g2.2xlarge", "r3.large", "r3.xlarge", "r3.2xlarge", "r3.4xlarge", "r3.8xlarge", "i2.xlarge", "i2.2xlarge", "i2.4xlarge", "i2.8xlarge", "d2.xlarge", "d2.2xlarge", "d2.4xlarge", "d2.8xlarge", "hi1.4xlarge", "hs1.8xlarge", "cr1.8xlarge", "cc2.8xlarge", "cg1.4xlarge"],
       "ConstraintDescription" : "must be a valid EC2 instance type."
     },
@@ -39,6 +39,11 @@
       "Type" : "AWS::EC2::VPC::Id",
       "Default" : "vpc-0418e4eb62e739fe5"
     },
+    "SelectSubnet" : {
+      "Description" : "Select Subnet for deployment",
+      "Type" : "String",
+      "Default" : "subnet-0f9821822c4e7186b"
+    },
     "SelectSG" : {
       "Description" : "Select Security Group for deployment",
       "Type" : "AWS::EC2::SecurityGroup::GroupName",
@@ -50,21 +55,8 @@
       "us-east-1"        : {"Windows2019" : "ami-0c96d9489fa933423", "Windows2012r2" : "ami-0fba87d7f8c8744d4"},
       "us-west-2"        : {"Windows2008r2" : "ami-0d725250b69cae269", "Windows2012r2" : "ami-02e27664434db6def"},
       "us-west-1"        : {"Windows2008r2" : "ami-0cd391ee2ad7d80b0", "Windows2012r2" : "ami-04370c2a300903acc"},
-      "eu-west-1"        : {"Windows2008r2" : "ami-0ffffc9a085b90ffa", "Windows2012r2" : "ami-01dbaf1c50a36891d"},
-      "eu-west-2"        : {"Windows2008r2" : "ami-0772b918d115fe008", "Windows2012r2" : "ami-0a7551990da17b8d6"},
-      "eu-west-3"        : {"Windows2008r2" : "ami-0956e0f47ca40b5bb", "Windows2012r2" : "ami-040ef025ec13d58bf"},
-      "eu-central-1"     : {"Windows2008r2" : "ami-0eb471abeccbcd912", "Windows2012r2" : "ami-0d55859ee09a59138"},
-      "ap-northeast-1"   : {"Windows2008r2" : "ami-0e850e62213220c82", "Windows2012r2" : "ami-0a45b66bda01c89c8"},
-      "ap-northeast-2"   : {"Windows2008r2" : "ami-00cda273ecf46d99e", "Windows2012r2" : "ami-0b3a3970b73d5b63a"},
-      "ap-northeast-3"   : {"Windows2008r2" : "ami-003051ef4ceec8d27", "Windows2012r2" : "ami-0b080b2ee57fa5e3d"},
-      "ap-southeast-1"   : {"Windows2008r2" : "ami-07d277db8f3dcbb5b", "Windows2012r2" : "ami-0bf96f139bff648cc"},
-      "ap-southeast-2"   : {"Windows2008r2" : "ami-01d0a8d5f9671d888", "Windows2012r2" : "ami-0664c039c4dea5193"},
-      "ap-south-1"       : {"Windows2008r2" : "ami-0131b74fc8bfa2b67", "Windows2012r2" : "ami-0bd1dc65d74266ee2"},
       "us-east-2"        : {"Windows2008r2" : "ami-0935776807b87a59e", "Windows2012r2" : "ami-0679e5ac84d15f15e"},
-      "ca-central-1"     : {"Windows2008r2" : "ami-07f0454772df58f58", "Windows2012r2" : "ami-0a27bbef221046aae"},
-      "sa-east-1"        : {"Windows2008r2" : "ami-07ddb1a3b50d0e91f", "Windows2012r2" : "ami-01d74c2e93478e2f5"},
-      "cn-north-1"       : {"Windows2008r2" : "ami-014020ef82f20dc97", "Windows2012r2" : "ami-0aefdd3cc86bdb17d"},
-      "cn-northwest-1"   : {"Windows2008r2" : "ami-08a83481445dcf342", "Windows2012r2" : "ami-08922e8cdfa19cd6e"}
+      "ca-central-1"     : {"Windows2008r2" : "ami-07f0454772df58f58", "Windows2012r2" : "ami-0a27bbef221046aae"}
     }
   },
 
@@ -78,58 +70,13 @@
 
     "MyMachine": {
       "Type" : "AWS::EC2::Instance",
-      "Metadata" : {
-        "AWS::CloudFormation::Init" : {
-          "config" : {
-            "files" : {
-              "c:\\cfn\\cfn-hup.conf" : {
-                "content" : { "Fn::Join" : ["", [
-                  "[main]\n",
-                  "stack=", { "Ref" : "AWS::StackId" }, "\n",
-                  "region=", { "Ref" : "AWS::Region" }, "\n"
-                  ]]}
-              },
-              "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : {
-                "content": { "Fn::Join" : ["", [
-                  "[cfn-auto-reloader-hook]\n",
-                  "triggers=post.update\n",
-                  "path=Resources.MyMachine.Metadata.AWS::CloudFormation::Init\n",
-                  "action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" },
-                                                 " -r MyMachine",
-                                                 " --region ", { "Ref" : "AWS::Region" }, "\n"
-                ]]}
-              }
-            },
-            
-            "services" : {
-              "windows" : {
-                "cfn-hup" : {
-                  "enabled" : "true",
-                  "ensureRunning" : "true",
-                  "files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
-                }
-              }
-            }
-          }
-        }
-      },
       "Properties": {
         "InstanceType" : { "Ref" : "InstanceType" },
-        "ImageId" : { "Fn::FindInMap" : [ "AWSRegion2AMI", { "Ref" : "AWSRegion" }, {"Ref" : "WindowsVersion"} ]},
+        "ImageId" : "ami-0c96d9489fa933423",
         "SecurityGroups" : [ {"Ref" : "SelectSG"} ],
         "KeyName" : { "Ref" : "KeyName" },
         "VpcId" : { "Ref" : "SelectVPCId"},
-        "UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
-          "<script>\n",
-
-          "cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, 
-          " -r MyMachine",
-          " --region ", { "Ref" : "AWS::Region" }, "\n",
-
-          "cfn-signal.exe -e %ERRORLEVEL% ", { "Fn::Base64" : { "Ref" : "WaitHandle" }}, "\n",
-          
-          "</script>"
-          ]]}}
+        "SubnetId" : {"Ref" : "SelectSubnet" }
         }
       },
 
