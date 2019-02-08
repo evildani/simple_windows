@@ -22,24 +22,24 @@
       "MaxLength" : "18",
       "AllowedPattern" : "^([0-9]+\\.){3}[0-9]+\\/[0-9]+$"
     },
-     "AWSRegion" : {
+    "AWSRegion" : {
       "Description" : "Region and Zone to deploy the Instance",
       "Type" : "String",
       "Default" : "us-east-1",
       "AllowedValues" : [ "us-east-1","us-west-2","ca-central-1"]
     },
-      "WindowsVersion" : {
+    "WindowsVersion" : {
       "Description" : "What Version of Windows is being deployed",
       "Type" : "String",
       "Default" : "Windows2019",
       "AllowedValues" : [ "Windows2019","Windows2008r2","Windows2012r2"]
     },
-      "SelectVPCId" : {
+    "SelectVPCId" : {
       "Description" : "Select VPC for deployment",
       "Type" : "AWS::EC2::VPC::Id",
       "Default" : "vpc-0418e4eb62e739fe5"
     },
-      "SelectSG" : {
+    "SelectSG" : {
       "Description" : "Select Security Group for deployment",
       "Type" : "AWS::EC2::SecurityGroup::GroupName",
       "Default" : "launch-wizard-6"
@@ -66,7 +66,6 @@
       "cn-north-1"       : {"Windows2008r2" : "ami-014020ef82f20dc97", "Windows2012r2" : "ami-0aefdd3cc86bdb17d"},
       "cn-northwest-1"   : {"Windows2008r2" : "ami-08a83481445dcf342", "Windows2012r2" : "ami-08922e8cdfa19cd6e"}
     }
-
   },
 
   "Resources" : {
@@ -119,7 +118,7 @@
         "ImageId" : { "Fn::FindInMap" : [ "AWSRegion2AMI", { "Ref" : "AWSRegion" }, {"Ref" : "WindowsVersion"} ]},
         "SecurityGroups" : [ {"Ref" : "SelectSG"} ],
         "KeyName" : { "Ref" : "KeyName" },
-        "VpcId" : "SelectVPCId",
+        "VpcId" : { "Ref" : "SelectVPCId"},
         "UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
           "<script>\n",
 
@@ -146,7 +145,7 @@
         "Timeout" : "9000"
       }
     }
-  }
+  },
   "Outputs" : {
     "ImageId" : {
       "Value" :  { "Fn::FindInMap" : [ "AWSRegion2AMI", { "Ref" : "AWSRegion" }, {"Ref" : "WindowsVersion"} ]},
@@ -154,7 +153,7 @@
     },
     "EIP" : {
       "Value" : {"Ref" : "OutputEIP"},
-      "Description" : "Final Elastic IP for machine"
+      "Description" : "Test"
     }
   }
 }
