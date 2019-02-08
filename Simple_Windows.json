@@ -70,18 +70,6 @@
   },
 
   "Resources" : {
-    "MySecurityGroup" : {
-      "Type" : "AWS::EC2::SecurityGroup",
-      "Properties" : {
-        "GroupDescription" : "Enable HTTP and RDP",
-        "VpcId" : {"Ref" : "SelectVPCId"},
-        "SecurityGroupIngress" : [
-          {"IpProtocol" : "tcp", "FromPort" : "80", "ToPort" : "80", "CidrIp" : "0.0.0.0/0"},
-          {"IpProtocol" : "tcp", "FromPort" : "3389", "ToPort" : "3389", "CidrIp" : { "Ref" : "SourceCidrForRDP" } }
-        ]
-      }
-    },
-
     "OutputEIP" : {
       "Type" : "AWS::EC2::EIP",
       "Properties" : {
@@ -106,7 +94,7 @@
                 "content": { "Fn::Join" : ["", [
                   "[cfn-auto-reloader-hook]\n",
                   "triggers=post.update\n",
-                  "path=Resources.SharePointFoundation.Metadata.AWS::CloudFormation::Init\n",
+                  "path=Resources.MyMachine.Metadata.AWS::CloudFormation::Init\n",
                   "action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" },
                                                  " -r MyMachine",
                                                  " --region ", { "Ref" : "AWS::Region" }, "\n"
@@ -129,7 +117,7 @@
       "Properties": {
         "InstanceType" : { "Ref" : "InstanceType" },
         "ImageId" : { "Fn::FindInMap" : [ "AWSRegion2AMI", { "Ref" : "AWSRegion" }, {"Ref" : "WindowsVersion"} ]},
-        "SecurityGroups" : [ {"Ref" : "MySecurityGroup"} ],
+        "SecurityGroups" : [ {"Ref" : "SelectSG"} ],
         "KeyName" : { "Ref" : "KeyName" },
         "VpcId" : "SelectVPCId",
         "UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
@@ -155,7 +143,7 @@
       "DependsOn" : "MyMachine",
       "Properties" : {
         "Handle" : {"Ref" : "WaitHandle"},
-        "Timeout" : "3600"
+        "Timeout" : "9000"
       }
     }
   }
