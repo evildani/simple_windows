@@ -5,7 +5,7 @@
     "KeyName" : {
       "Description" : "Name of an existing EC2 KeyPair",
       "Type" : "AWS::EC2::KeyPair::KeyName",
-      "ConstraintDescription" : "must be the name of an existing EC2 KeyPair."
+      "Default" : "daniel-2-aws-vpn"
     },
     "InstanceType" : {
       "Description" : "Amazon EC2 instance type",
@@ -34,11 +34,6 @@
       "Default" : "Windows2019",
       "AllowedValues" : [ "Windows2019","Windows2008r2","Windows2012r2"]
     },
-    "SelectVPCId" : {
-      "Description" : "Select VPC for deployment",
-      "Type" : "AWS::EC2::VPC::Id",
-      "Default" : "vpc-0418e4eb62e739fe5"
-    },
     "SelectSubnet" : {
       "Description" : "Select Subnet for deployment",
       "Type" : "String",
@@ -46,8 +41,11 @@
     },
     "SelectSG" : {
       "Description" : "Select Security Group for deployment",
-      "Type" : "AWS::EC2::SecurityGroup::GroupName",
-      "Default" : "launch-wizard-6"
+      "Type" : "AWS::EC2::SecurityGroup::Id",
+    },
+    "SelectSubnet" : {
+      "Description" : "Select subnet for deployment",
+      "Type" : "AWS::EC2::Subnet::Id",
     }
   },
   "Mappings" : {
@@ -72,10 +70,9 @@
       "Type" : "AWS::EC2::Instance",
       "Properties": {
         "InstanceType" : { "Ref" : "InstanceType" },
-        "ImageId" : "ami-0c96d9489fa933423",
-        "SecurityGroups" : [ {"Ref" : "SelectSG"} ],
+        "ImageId" : "ami-0df43b4f8a07c7c14",
+        "SecurityGroupIds" : [ {"Ref" : "SelectSG"} ],
         "KeyName" : { "Ref" : "KeyName" },
-        "VpcId" : { "Ref" : "SelectVPCId"},
         "SubnetId" : {"Ref" : "SelectSubnet" }
         }
       },
