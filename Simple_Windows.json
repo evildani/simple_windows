@@ -59,13 +59,6 @@
   },
 
   "Resources" : {
-    "OutputEIP" : {
-      "Type" : "AWS::EC2::EIP",
-      "Properties" : {
-        "InstanceId" : { "Ref" : "MyMachine" }
-      }
-    },
-
     "MyMachine": {
       "Type" : "AWS::EC2::Instance",
       "Properties": {
@@ -86,7 +79,7 @@
       "DependsOn" : "MyMachine",
       "Properties" : {
         "Handle" : {"Ref" : "WaitHandle"},
-        "Timeout" : "9000"
+        "Timeout" : "3600"
       }
     }
   },
@@ -94,10 +87,6 @@
     "ImageId" : {
       "Value" :  { "Fn::FindInMap" : [ "AWSRegion2AMI", { "Ref" : "AWSRegion" }, {"Ref" : "WindowsVersion"} ]},
       "Description" : "Resulting AMI used"
-    },
-    "EIP" : {
-      "Value" : {"Ref" : "OutputEIP"},
-      "Description" : "Test"
     }
   }
 }
